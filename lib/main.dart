@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify/core/theme.dart';
 import 'package:spotify/features/auth/presentation/logic/auth_controller.dart';
 import 'package:spotify/features/auth/presentation/views/screens/login_page.dart';
-import 'package:spotify/features/auth/presentation/views/screens/signup_page.dart';
 import 'package:spotify/features/home/presentation/views/screens/home_page.dart';
 
 void main() async {
@@ -28,23 +27,36 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.read(authControllerProvider);
 
-    return MaterialApp(
-      title: 'Spotify Clone',
-      theme: AppTheme.darkThemeMode,
-      home: auth.when(data: (data) {
-        return data.when(
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      behavior: HitTestBehavior.opaque,
+      child: MaterialApp(
+        title: 'Spotify Clone',
+        theme: AppTheme.darkThemeMode,
+        home: auth.when(data: (data) {
+          return data.when(
             loggedIn: () => const HomePage(),
             loggedOut: () => const LoginPage(),
-            loading: () => const SignupPage());
-      }, error: (error, st) {
-        return Material(
-          child: Center(
-            child: Text(error.toString()),
-          ),
-        );
-      }, loading: () {
-        return const CircularProgressIndicator();
-      }),
+
+            //Loading state was created just to return
+            //from build function in AuthController
+
+            loading: () => const Material(
+              child: Center(
+                child: Text("App Failed to Launch"),
+              ),
+            ),
+          );
+        }, error: (error, st) {
+          return Material(
+            child: Center(
+              child: Text(error.toString()),
+            ),
+          );
+        }, loading: () {
+          return const CircularProgressIndicator();
+        }),
+      ),
     );
   }
 }
