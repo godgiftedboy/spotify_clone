@@ -4,6 +4,7 @@ import 'package:spotify/core/pallete.dart';
 import 'package:spotify/features/auth/data/models/login/login_response_model.dart';
 import 'package:spotify/features/auth/data/models/signup/signup_request_model.dart';
 import 'package:spotify/features/auth/presentation/logic/auth_controller.dart';
+import 'package:spotify/features/auth/presentation/logic/auth_state.dart';
 import 'package:spotify/features/auth/presentation/views/screens/login_page.dart';
 import 'package:spotify/features/auth/presentation/views/widgets/custom_field.dart';
 import 'package:spotify/features/auth/presentation/views/widgets/gradient_button.dart';
@@ -33,8 +34,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref
-        .watch(authControllerProvider.select((val) => val.isLoading == true));
+    // final isLoading = ref
+    //     .watch(authControllerProvider.select((val) => val.isLoading == true));
+    final isLoading = ref.watch(authControllerProvider
+        .select((val) => val == const AuthState.loading()));
 
     // ref.listen(
     //   authControllerProvider,

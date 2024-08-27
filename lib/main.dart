@@ -33,29 +33,22 @@ class MyApp extends ConsumerWidget {
       child: MaterialApp(
         title: 'Spotify Clone',
         theme: AppTheme.darkThemeMode,
-        home: auth.when(data: (data) {
-          return data.when(
-            loggedIn: () => const HomePage(),
-            loggedOut: () => const LoginPage(),
+        home: auth.when(
+          loggedIn: () => const HomePage(),
+          loggedOut: () => const LoginPage(),
 
-            //Loading state was created just to return
-            //from build function in AuthController
+          //Loading state created to return
+          //from build function in AuthController
 
-            loading: () => const Material(
-              child: Center(
-                child: Text("App Failed to Launch"),
-              ),
-            ),
-          );
-        }, error: (error, st) {
-          return Material(
+          //also used for displaying circular progress indicator instead of button
+          //while doing post method in login and signup
+
+          loading: () => const Material(
             child: Center(
-              child: Text(error.toString()),
+              child: CircularProgressIndicator(),
             ),
-          );
-        }, loading: () {
-          return const CircularProgressIndicator();
-        }),
+          ),
+        ),
       ),
     );
   }

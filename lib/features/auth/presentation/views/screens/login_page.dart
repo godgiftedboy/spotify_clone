@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify/core/pallete.dart';
 import 'package:spotify/features/auth/data/models/login/login_request_model.dart';
 import 'package:spotify/features/auth/presentation/logic/auth_controller.dart';
+import 'package:spotify/features/auth/presentation/logic/auth_state.dart';
 import 'package:spotify/features/auth/presentation/views/screens/signup_page.dart';
 import 'package:spotify/features/auth/presentation/views/widgets/custom_field.dart';
 import 'package:spotify/features/auth/presentation/views/widgets/gradient_button.dart';
@@ -31,8 +32,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading =
-        ref.watch(authControllerProvider.select((val) => val.isLoading));
+    final isLoading = ref.watch(authControllerProvider
+        .select((val) => val == const AuthState.loading()));
     // ref.listen(authControllerProvider, (prev, next) {
     // ref.listen(authControllerProvider, (_, next) {
     //   next.when(

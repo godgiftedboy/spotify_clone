@@ -13,18 +13,15 @@ import 'package:spotify/features/auth/data/repository/auth_repository.dart';
 import 'package:spotify/features/auth/presentation/logic/auth_state.dart';
 import 'package:spotify/features/auth/presentation/views/screens/login_page.dart';
 
-//return AuthState in place of UserModel.
-//AuthState class as in Meal Manager App
-
 final authControllerProvider =
-    AsyncNotifierProvider<AuthController, AuthState>(AuthController.new);
+    NotifierProvider<AuthController, AuthState>(AuthController.new);
 
-class AuthController extends AsyncNotifier<AuthState> {
+class AuthController extends Notifier<AuthState> {
   late AuthRepository authRepository;
   late DbClient dbClient;
 
   @override
-  FutureOr<AuthState> build() {
+  AuthState build() {
     authRepository = ref.watch(authRepositoryProvider);
     dbClient = ref.watch(dbClientProvider);
     // state = AsyncValue.data(AuthState.loading());
@@ -40,13 +37,13 @@ class AuthController extends AsyncNotifier<AuthState> {
         await dbClient.getData(dataType: LocalDataType.string, dbKey: "token");
 
     result.isEmpty
-        ? state = const AsyncValue.data(AuthState.loggedOut())
-        : state = const AsyncValue.data(AuthState.loggedIn());
+        ? state = const AuthState.loggedOut()
+        : state = const AuthState.loggedIn();
     // return result;
   }
 
   Future<LoginResponseModel> login(LoginRequestModel loginRequestData) async {
-    state = const AsyncValue.loading();
+    state = const AuthState.loading();
 
     final result = await authRepository.login(loginRequestData);
 
@@ -57,7 +54,7 @@ class AuthController extends AsyncNotifier<AuthState> {
   }
 
   _loginFailure(AppError l) {
-    state = const AsyncValue.data(AuthState.loggedOut());
+    state = const AuthState.loggedOut();
     return LoginResponseModel(
       isSuccess: false,
       message: l.message,
@@ -71,13 +68,13 @@ class AuthController extends AsyncNotifier<AuthState> {
       dbKey: "token",
       value: r.token,
     );
-    state = const AsyncValue.data(AuthState.loggedIn());
+    state = const AuthState.loggedIn();
     return LoginResponseModel(isSuccess: true, data: r);
   }
 
   Future<LoginResponseModel> signup(
       SignUpRequestModel signupRequestData) async {
-    state = const AsyncValue.loading();
+    state = const AuthState.loading();
 
     final result = await authRepository.signup(signupRequestData);
     return result.fold(
@@ -87,7 +84,7 @@ class AuthController extends AsyncNotifier<AuthState> {
   }
 
   _signupFailure(AppError l) {
-    state = const AsyncValue.data(AuthState.loggedOut());
+    state = const AuthState.loggedOut();
     return LoginResponseModel(
       isSuccess: false,
       message: l.message,
@@ -95,13 +92,13 @@ class AuthController extends AsyncNotifier<AuthState> {
   }
 
   _signupSuccess(UserModel r) {
-    state = const AsyncValue.data(AuthState.loggedOut());
+    state = const AuthState.loggedOut();
     return LoginResponseModel(isSuccess: true, data: r);
   }
 
   Future<void> logout(BuildContext context) async {
     await dbClient.reset();
-    state = const AsyncValue.data(AuthState.loggedOut());
+    state = const AuthState.loggedOut();
     if (context.mounted) {
       Navigator.pushAndRemoveUntil(
         context,
