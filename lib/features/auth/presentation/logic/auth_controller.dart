@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify/core/app_error.dart';
 import 'package:spotify/core/db_client.dart';
+import 'package:spotify/core/firebase_auth/auth_services.dart';
 import 'package:spotify/core/utils.dart';
 import 'package:spotify/features/auth/data/models/login/login_request_model.dart';
 import 'package:spotify/features/auth/data/models/login/login_response_model.dart';
@@ -42,15 +43,40 @@ class AuthController extends Notifier<AuthState> {
     // return result;
   }
 
-  Future<LoginResponseModel> login(LoginRequestModel loginRequestData) async {
+  Future<LoginResponseModel> login(LoginRequestModel loginRequestData,
+      {bool isGoogle = false}) async {
     state = const AuthState.loading();
 
-    final result = await authRepository.login(loginRequestData);
+    if (isGoogle) {
+      //signup using gmail google data to store it in the database
+      // try {
+      final response = await authRepository.signup(
+        SignUpRequestModel(
+          loginRequestData.email,
+          loginRequestData.password,
+          loginRequestData.name,
+        ),
+      );
+      return response.fold((l) async {
+        if (l.message == "User with the same email already exists!") {
+          return await login(loginRequestData, isGoogle: false);
+        } else {
+          throw l.message;
+        }
+      }, (r) async {
+        return await login(loginRequestData, isGoogle: false);
+      });
+      // } catch (e) {
+      //   print("here is the error: ${e}");
+      // }
+    } else {
+      final result = await authRepository.login(loginRequestData);
 
-    return result.fold(
-      (l) => _loginFailure(l),
-      (r) => _loginSucess(r),
-    );
+      return result.fold(
+        (l) => _loginFailure(l),
+        (r) => _loginSucess(r),
+      );
+    }
   }
 
   _loginFailure(AppError l) {
@@ -69,7 +95,10 @@ class AuthController extends Notifier<AuthState> {
       value: r.token,
     );
     state = const AuthState.loggedIn();
-    return LoginResponseModel(isSuccess: true, data: r);
+    return LoginResponseModel(
+      isSuccess: true,
+      data: r,
+    );
   }
 
   Future<LoginResponseModel> signup(
@@ -98,6 +127,7 @@ class AuthController extends Notifier<AuthState> {
 
   Future<void> logout(BuildContext context) async {
     await dbClient.reset();
+    await ref.read(authServicesProvider).googleSignOut();
     state = const AuthState.loggedOut();
     if (context.mounted) {
       Navigator.pushAndRemoveUntil(
