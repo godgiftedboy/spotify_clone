@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify/core/app_error.dart';
 import 'package:spotify/core/db_client.dart';
 import 'package:spotify/core/firebase_auth/auth_services.dart';
+import 'package:spotify/core/providers/current_user_provider.dart';
 import 'package:spotify/core/utils.dart';
 import 'package:spotify/features/auth/data/models/login/login_request_model.dart';
 import 'package:spotify/features/auth/data/models/login/login_response_model.dart';
@@ -36,11 +37,17 @@ class AuthController extends Notifier<AuthState> {
   Future<void> checkLogin() async {
     final result =
         await dbClient.getData(dataType: LocalDataType.string, dbKey: "token");
+    if (result.isEmpty) {
+      state = const AuthState.loggedOut();
+    } else {
+      state = const AuthState.loggedIn();
+      getUserData();
+    }
+  }
 
-    result.isEmpty
-        ? state = const AuthState.loggedOut()
-        : state = const AuthState.loggedIn();
-    // return result;
+  getUserData() async {
+    final response = await ref.read(dbClientProvider).getAuthData();
+    ref.read(currentUserProvider.notifier).addUser(response);
   }
 
   Future<LoginResponseModel> login(
@@ -75,7 +82,8 @@ class AuthController extends Notifier<AuthState> {
 
       return result.fold(
         (l) => _loginFailure(l),
-        (r) => _loginSucess(r, loginRequestData),
+        (r) => _loginSucess(
+            r.copyWith(photoUrl: loginRequestData.photoUrl), loginRequestData),
       );
     }
   }
@@ -90,6 +98,8 @@ class AuthController extends Notifier<AuthState> {
 
   _loginSucess(UserModel r, LoginRequestModel loginReqData) {
     dbClient.setAuthData(jsonData: r.toJson());
+    ref.read(currentUserProvider.notifier).addUser(r);
+
     dbClient.setData(
       dataType: LocalDataType.string,
       dbKey: "token",
