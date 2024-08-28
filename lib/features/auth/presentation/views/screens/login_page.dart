@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify/core/firebase_auth/auth_services.dart';
 import 'package:spotify/core/pallete.dart';
 import 'package:spotify/features/auth/data/models/login/login_request_model.dart';
 import 'package:spotify/features/auth/presentation/logic/auth_controller.dart';
@@ -22,6 +23,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  bool isGoogleLoading = false;
 
   @override
   void dispose() {
@@ -100,7 +102,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               ? {
                                   showSnackBar(
                                     context,
-                                    'Account Logged in successfully.',
+                                    'Welcome ${response.data!.name}! Logged in successfully.',
                                   ),
                                   Navigator.pushAndRemoveUntil(
                                     context,
@@ -139,7 +141,63 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ],
                   ),
                 ),
-              )
+              ),
+              isGoogleLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton.icon(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStateProperty.all(const Color(0xffDB4437)),
+                      ),
+                      onPressed: () async {
+                        // setState(() {
+                        //   isGoogleLoading = true;
+                        // });
+
+                        final data = await ref
+                            .read(authServicesProvider)
+                            .authSignWithGoogle(context);
+                        if (data != null) {
+                          if (context.mounted) {
+                            var response = await ref
+                                .watch(authControllerProvider.notifier)
+                                .login(
+                                  LoginRequestModel(
+                                    data.user!.email.toString(),
+                                    "googlelogin",
+                                    photoUrl: data.user!.photoURL.toString(),
+                                    name: data.user!.displayName.toString(),
+                                  ),
+                                  isGoogle: true,
+                                );
+                            if (!context.mounted) return;
+                            response.isSuccess
+                                ? {
+                                    showSnackBar(
+                                      context,
+                                      'Welcome ${response.data!.name}! Logged in successfully.',
+                                    ),
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const HomePage(),
+                                      ),
+                                      (_) => false,
+                                    )
+                                  }
+                                : showSnackBar(context, response.message);
+                          }
+                        }
+                        // setState(() {
+                        //   isGoogleLoading = false;
+                        // });
+                      },
+                      icon: const Icon(
+                        Icons.textsms_sharp,
+                        color: Colors.white,
+                      ),
+                      label: const Text("Login with Google"),
+                    ),
             ],
           ),
         ),
