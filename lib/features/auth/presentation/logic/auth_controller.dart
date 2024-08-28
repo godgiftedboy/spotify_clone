@@ -43,11 +43,12 @@ class AuthController extends Notifier<AuthState> {
     // return result;
   }
 
-  Future<LoginResponseModel> login(LoginRequestModel loginRequestData,
-      {bool isGoogle = false}) async {
+  Future<LoginResponseModel> login(
+    LoginRequestModel loginRequestData,
+  ) async {
     state = const AuthState.loading();
 
-    if (isGoogle) {
+    if (loginRequestData.isGoogle) {
       //signup using gmail google data to store it in the database
       // try {
       final response = await authRepository.signup(
@@ -59,12 +60,12 @@ class AuthController extends Notifier<AuthState> {
       );
       return response.fold((l) async {
         if (l.message == "User with the same email already exists!") {
-          return await login(loginRequestData, isGoogle: false);
+          return await login(loginRequestData.copyWith(isGoogle: false));
         } else {
           throw l.message;
         }
       }, (r) async {
-        return await login(loginRequestData, isGoogle: false);
+        return await login(loginRequestData.copyWith(isGoogle: false));
       });
       // } catch (e) {
       //   print("here is the error: ${e}");
@@ -74,7 +75,7 @@ class AuthController extends Notifier<AuthState> {
 
       return result.fold(
         (l) => _loginFailure(l),
-        (r) => _loginSucess(r),
+        (r) => _loginSucess(r, loginRequestData),
       );
     }
   }
@@ -87,7 +88,7 @@ class AuthController extends Notifier<AuthState> {
     );
   }
 
-  _loginSucess(UserModel r) {
+  _loginSucess(UserModel r, LoginRequestModel loginReqData) {
     dbClient.setAuthData(jsonData: r.toJson());
     dbClient.setData(
       dataType: LocalDataType.string,
@@ -98,6 +99,8 @@ class AuthController extends Notifier<AuthState> {
     return LoginResponseModel(
       isSuccess: true,
       data: r,
+      isGoogle: loginReqData.isGoogle,
+      photoUrl: loginReqData.photoUrl,
     );
   }
 

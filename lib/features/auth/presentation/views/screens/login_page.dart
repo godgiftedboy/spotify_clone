@@ -167,8 +167,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     "googlelogin",
                                     photoUrl: data.user!.photoURL.toString(),
                                     name: data.user!.displayName.toString(),
+                                    isGoogle: true,
                                   ),
-                                  isGoogle: true,
                                 );
                             if (!context.mounted) return;
                             response.isSuccess
