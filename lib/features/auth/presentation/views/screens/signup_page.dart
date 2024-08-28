@@ -63,102 +63,110 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     //   },
     // );
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(),
+      // appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Form(
           key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Sign Up.',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).viewInsets.bottom,
               ),
-              const SizedBox(height: 30),
-              CustomField(
-                hintText: 'Name',
-                controller: nameController,
-              ),
-              const SizedBox(height: 15),
-              CustomField(
-                hintText: 'Email',
-                controller: emailController,
-              ),
-              const SizedBox(height: 15),
-              CustomField(
-                hintText: 'Password',
-                controller: passwordController,
-                isObscureText: true,
-              ),
-              const SizedBox(height: 20),
-              isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : AuthGradientButton(
-                      buttonText: 'Sign up',
-                      onTap: () async {
-                        if (formKey.currentState!.validate()) {
-                          LoginResponseModel response = await ref
-                              .watch(authControllerProvider.notifier)
-                              .signup(
-                                SignUpRequestModel(
-                                    emailController.text,
-                                    passwordController.text,
-                                    nameController.text),
-                              );
-                          if (!context.mounted) return;
-
-                          response.isSuccess
-                              ? {
-                                  showSnackBar(
-                                    context,
-                                    'Account created successfully! Please  login.',
-                                  ),
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginPage(),
-                                    ),
-                                    (_) => false,
-                                  )
-                                }
-                              : showSnackBar(context, response.message);
-                        }
-                      },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Sign Up.',
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
                     ),
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginPage(),
-                    ),
-                  );
-                },
-                child: RichText(
-                  text: TextSpan(
-                    text: 'Already have an account? ',
-                    style: Theme.of(context).textTheme.titleMedium,
-                    children: const [
-                      TextSpan(
-                        text: 'Sign In',
-                        style: TextStyle(
-                          color: Pallete.gradient2,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
                   ),
-                ),
-              )
-            ],
+                  const SizedBox(height: 30),
+                  CustomField(
+                    hintText: 'Name',
+                    controller: nameController,
+                  ),
+                  const SizedBox(height: 15),
+                  CustomField(
+                    hintText: 'Email',
+                    controller: emailController,
+                  ),
+                  const SizedBox(height: 15),
+                  CustomField(
+                    hintText: 'Password',
+                    controller: passwordController,
+                    isObscureText: true,
+                  ),
+                  const SizedBox(height: 20),
+                  isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : AuthGradientButton(
+                          buttonText: 'Sign up',
+                          onTap: () async {
+                            if (formKey.currentState!.validate()) {
+                              LoginResponseModel response = await ref
+                                  .watch(authControllerProvider.notifier)
+                                  .signup(
+                                    SignUpRequestModel(
+                                        emailController.text,
+                                        passwordController.text,
+                                        nameController.text),
+                                  );
+                              if (!context.mounted) return;
+
+                              response.isSuccess
+                                  ? {
+                                      showSnackBar(
+                                        context,
+                                        'Account created successfully! Please  login.',
+                                      ),
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginPage(),
+                                        ),
+                                        (_) => false,
+                                      )
+                                    }
+                                  : showSnackBar(context, response.message);
+                            }
+                          },
+                        ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginPage(),
+                        ),
+                      );
+                    },
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Already have an account? ',
+                        style: Theme.of(context).textTheme.titleMedium,
+                        children: const [
+                          TextSpan(
+                            text: 'Sign In',
+                            style: TextStyle(
+                              color: Pallete.gradient2,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
         ),
       ),
