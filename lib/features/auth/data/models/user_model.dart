@@ -5,24 +5,28 @@ class UserModel {
   final String email;
   final String id;
   final String token;
-  UserModel({
-    required this.name,
-    required this.email,
-    required this.id,
-    required this.token,
-  });
+  String photoUrl;
+
+  UserModel(
+      {required this.name,
+      required this.email,
+      required this.id,
+      required this.token,
+      this.photoUrl = ""});
 
   UserModel copyWith({
     String? name,
     String? email,
     String? id,
     String? token,
+    String? photoUrl,
   }) {
     return UserModel(
       name: name ?? this.name,
       email: email ?? this.email,
       id: id ?? this.id,
       token: token ?? this.token,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 
@@ -32,6 +36,7 @@ class UserModel {
       'email': email,
       'id': id,
       'token': token,
+      'photoUrl': photoUrl,
     };
   }
 
@@ -41,12 +46,13 @@ class UserModel {
       email: map['email'] ?? '',
       id: map['id'] ?? '',
       token: map['token'] ?? '',
+      photoUrl: map['photoUrl'] ?? '',
     );
   }
 
   @override
   String toString() {
-    return 'UserModel(name: $name, email: $email, id: $id, token: $token)';
+    return 'UserModel(name: $name, email: $email, id: $id, token: $token,photoUrl: $photoUrl)';
   }
 
   @override
@@ -56,11 +62,16 @@ class UserModel {
     return other.name == name &&
         other.email == email &&
         other.id == id &&
-        other.token == token;
+        other.token == token &&
+        other.photoUrl == photoUrl;
   }
 
   @override
   int get hashCode {
-    return name.hashCode ^ email.hashCode ^ id.hashCode ^ token.hashCode;
+    return name.hashCode ^
+        email.hashCode ^
+        id.hashCode ^
+        token.hashCode ^
+        photoUrl.hashCode;
   }
 }
