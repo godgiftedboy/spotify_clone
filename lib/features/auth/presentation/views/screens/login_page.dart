@@ -55,150 +55,167 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     //   );
     // });
     return Scaffold(
-      appBar: AppBar(),
+      // appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Form(
           key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Sign In.',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 30),
-              CustomField(
-                hintText: 'Email',
-                controller: emailController,
-              ),
-              const SizedBox(height: 15),
-              CustomField(
-                hintText: 'Password',
-                controller: passwordController,
-                isObscureText: true,
-              ),
-              const SizedBox(height: 20),
-              isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : AuthGradientButton(
-                      buttonText: 'Sign in',
-                      onTap: () async {
-                        if (formKey.currentState!.validate()) {
-                          var response = await ref
-                              .read(authControllerProvider.notifier)
-                              .login(LoginRequestModel(
-                                emailController.text,
-                                passwordController.text,
-                              ));
+          child: SingleChildScrollView(
+            //to prevent overflow on opening keyboard
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).viewInsets.bottom,
 
-                          if (!context.mounted) return;
-                          response.isSuccess
-                              ? {
-                                  showSnackBar(
-                                    context,
-                                    'Welcome ${response.data!.name}! Logged in successfully.',
-                                  ),
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const HomePage(),
-                                    ),
-                                    (_) => false,
-                                  )
-                                }
-                              : showSnackBar(context, response.message);
-                        }
-                      },
+                ///keyboard height -MediaQuery.of(context).viewInsets.bottom,
+
+                //subtracting keyboard height provides the proper layout while
+                //keyboard is opened
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Sign In.',
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
                     ),
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignupPage(),
-                    ),
-                  );
-                },
-                child: RichText(
-                  text: TextSpan(
-                    text: 'Don\'t have an account? ',
-                    style: Theme.of(context).textTheme.titleMedium,
-                    children: const [
-                      TextSpan(
-                        text: 'Sign Up',
-                        style: TextStyle(
-                          color: Pallete.gradient2,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
                   ),
-                ),
-              ),
-              isGoogleLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton.icon(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            WidgetStateProperty.all(const Color(0xffDB4437)),
-                      ),
-                      onPressed: () async {
-                        // setState(() {
-                        //   isGoogleLoading = true;
-                        // });
+                  const SizedBox(height: 30),
+                  CustomField(
+                    hintText: 'Email',
+                    controller: emailController,
+                  ),
+                  const SizedBox(height: 15),
+                  CustomField(
+                    hintText: 'Password',
+                    controller: passwordController,
+                    isObscureText: true,
+                  ),
+                  const SizedBox(height: 20),
+                  isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : AuthGradientButton(
+                          buttonText: 'Sign in',
+                          onTap: () async {
+                            if (formKey.currentState!.validate()) {
+                              var response = await ref
+                                  .read(authControllerProvider.notifier)
+                                  .login(LoginRequestModel(
+                                    emailController.text,
+                                    passwordController.text,
+                                  ));
 
-                        final data = await ref
-                            .read(authServicesProvider)
-                            .authSignWithGoogle(context);
-                        if (data != null) {
-                          if (context.mounted) {
-                            var response = await ref
-                                .watch(authControllerProvider.notifier)
-                                .login(
-                                  LoginRequestModel(
-                                    data.user!.email.toString(),
-                                    "googlelogin",
-                                    photoUrl: data.user!.photoURL.toString(),
-                                    name: data.user!.displayName.toString(),
-                                    isGoogle: true,
-                                  ),
-                                );
-                            if (!context.mounted) return;
-                            response.isSuccess
-                                ? {
-                                    showSnackBar(
-                                      context,
-                                      'Welcome ${response.data!.name}! Logged in successfully.',
-                                    ),
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const HomePage(),
+                              if (!context.mounted) return;
+                              response.isSuccess
+                                  ? {
+                                      showSnackBar(
+                                        context,
+                                        'Welcome ${response.data!.name}! Logged in successfully.',
                                       ),
-                                      (_) => false,
-                                    )
-                                  }
-                                : showSnackBar(context, response.message);
-                          }
-                        }
-                        // setState(() {
-                        //   isGoogleLoading = false;
-                        // });
-                      },
-                      icon: const Icon(
-                        Icons.textsms_sharp,
-                        color: Colors.white,
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomePage(),
+                                        ),
+                                        (_) => false,
+                                      )
+                                    }
+                                  : showSnackBar(context, response.message);
+                            }
+                          },
+                        ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignupPage(),
+                        ),
+                      );
+                    },
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Don\'t have an account? ',
+                        style: Theme.of(context).textTheme.titleMedium,
+                        children: const [
+                          TextSpan(
+                            text: 'Sign Up',
+                            style: TextStyle(
+                              color: Pallete.gradient2,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                      label: const Text("Login with Google"),
                     ),
-            ],
+                  ),
+                  isGoogleLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton.icon(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                                const Color(0xffDB4437)),
+                          ),
+                          onPressed: () async {
+                            // setState(() {
+                            //   isGoogleLoading = true;
+                            // });
+
+                            final data = await ref
+                                .read(authServicesProvider)
+                                .authSignWithGoogle(context);
+                            if (data != null) {
+                              if (context.mounted) {
+                                var response = await ref
+                                    .watch(authControllerProvider.notifier)
+                                    .login(
+                                      LoginRequestModel(
+                                        data.user!.email.toString(),
+                                        "googlelogin",
+                                        photoUrl:
+                                            data.user!.photoURL.toString(),
+                                        name: data.user!.displayName.toString(),
+                                        isGoogle: true,
+                                      ),
+                                    );
+                                if (!context.mounted) return;
+                                response.isSuccess
+                                    ? {
+                                        showSnackBar(
+                                          context,
+                                          'Welcome ${response.data!.name}! Logged in successfully.',
+                                        ),
+                                        Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const HomePage(),
+                                          ),
+                                          (_) => false,
+                                        )
+                                      }
+                                    : showSnackBar(context, response.message);
+                              }
+                            }
+                            // setState(() {
+                            //   isGoogleLoading = false;
+                            // });
+                          },
+                          icon: const Icon(
+                            Icons.textsms_sharp,
+                            color: Colors.white,
+                          ),
+                          label: const Text("Login with Google"),
+                        ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
