@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify/core/providers/current_user_provider.dart';
 import 'package:spotify/features/auth/presentation/logic/auth_controller.dart';
 import 'package:spotify/features/auth/presentation/views/widgets/gradient_button.dart';
+import 'package:spotify/features/home/presentation/views/screens/upload_song_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -35,10 +36,20 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
           ),
           AuthGradientButton(
-              buttonText: "Logout",
-              onTap: () {
-                ref.watch(authControllerProvider.notifier).logout(context);
-              }),
+            buttonText: "Upload Song",
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const UploadSongPage()));
+            },
+          ),
+          AuthGradientButton(
+            buttonText: "Logout",
+            onTap: () {
+              ref.watch(authControllerProvider.notifier).logout(context);
+            },
+          ),
         ],
       ),
     );
