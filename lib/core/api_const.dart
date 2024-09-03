@@ -6,4 +6,5 @@ class ApiConst {
   static const login = '/auth/login';
   static const signup = '/auth/signup';
   static const uploadSong = '/song/upload';
+  static const getAllSongs = '/song/list';
 }

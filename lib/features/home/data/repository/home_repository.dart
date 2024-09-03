@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:spotify/features/home/data/data_source/home_data_source.dart';
+import 'package:spotify/features/home/data/models/song_model.dart';
 
 import '../../../../core/app_error.dart';
 import '../../../../core/exception_handle.dart';
@@ -21,6 +22,7 @@ abstract class HomeRepository {
     String artist,
     String hexCode,
   );
+  Future<Either<AppError, List<SongModel>>> getAllsSongs();
 }
 
 class HomeRepositoryImpl implements HomeRepository {
@@ -43,6 +45,16 @@ class HomeRepositoryImpl implements HomeRepository {
         artist,
         hexCode,
       );
+      return Right(result);
+    } on DioExceptionHandle catch (e) {
+      return Left(AppError(e.message!));
+    }
+  }
+
+  @override
+  Future<Either<AppError, List<SongModel>>> getAllsSongs() async {
+    try {
+      final result = await homeDataSourceImpl.getAllSongsDs();
       return Right(result);
     } on DioExceptionHandle catch (e) {
       return Left(AppError(e.message!));

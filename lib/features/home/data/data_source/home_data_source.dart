@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify/core/api_client.dart';
 import 'package:spotify/core/api_const.dart';
 import 'package:spotify/core/api_method_enum.dart';
+import 'package:spotify/features/home/data/models/song_model.dart';
 
 import '../../../../core/db_client.dart';
 
@@ -23,6 +24,8 @@ abstract class HomeDataSource {
     String artist,
     String hexCode,
   );
+
+  Future<List<SongModel>> getAllSongsDs();
 }
 
 class HomeDataSourceImpl implements HomeDataSource {
@@ -57,5 +60,18 @@ class HomeDataSourceImpl implements HomeDataSource {
       data: formData,
     );
     return result.toString();
+  }
+
+  @override
+  Future<List<SongModel>> getAllSongsDs() async {
+    final token = await dbClient.getData(
+      dataType: LocalDataType.string,
+      dbKey: "token",
+    );
+    final result = await apiClient.request(
+      path: ApiConst.getAllSongs,
+      token: token,
+    );
+    return List.from(result).map((song) => SongModel.fromMap(song)).toList();
   }
 }

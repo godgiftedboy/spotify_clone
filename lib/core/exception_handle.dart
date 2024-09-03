@@ -27,6 +27,8 @@ class DioExceptionHandle implements Exception {
         return "Internal server error";
       case 400:
         return "${error['detail']}";
+      case 401:
+        return "${error['detail']}";
       default:
         return "Something went wrong";
     }

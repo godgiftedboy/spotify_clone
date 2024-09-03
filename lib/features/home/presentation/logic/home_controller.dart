@@ -4,18 +4,27 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify/core/utils.dart';
+import 'package:spotify/features/home/data/models/song_model.dart';
 import 'package:spotify/features/home/data/repository/home_repository.dart';
 
 final homeControllerProvider =
-    AsyncNotifierProvider<HomeController, String>(HomeController.new);
+    AsyncNotifierProvider<HomeController, List<SongModel>>(HomeController.new);
 
-class HomeController extends AsyncNotifier<String> {
+class HomeController extends AsyncNotifier<List<SongModel>> {
   late HomeRepository homeRepository;
 
   @override
-  FutureOr<String> build() {
+  FutureOr<List<SongModel>> build() {
     homeRepository = ref.watch(homeRepositoryProvider);
-    return "";
+    return getAllSongs();
+  }
+
+  FutureOr<List<SongModel>> getAllSongs() async {
+    final result = await homeRepository.getAllsSongs();
+    return result.fold(
+      (l) => throw l.message,
+      (r) => r,
+    );
   }
 
   Future<void> uploadSong({
@@ -25,7 +34,6 @@ class HomeController extends AsyncNotifier<String> {
     required String artist,
     required Color selectedColor,
   }) async {
-    state = const AsyncValue.loading();
     final result = await homeRepository.uploadSong(
       selectedAudio,
       selectedImage,
@@ -35,7 +43,7 @@ class HomeController extends AsyncNotifier<String> {
     );
     result.fold(
       (l) => throw l.message,
-      (r) => state = AsyncValue.data(r),
+      (r) => r,
     );
   }
 }
