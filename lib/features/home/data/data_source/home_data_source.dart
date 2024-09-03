@@ -1,0 +1,61 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify/core/api_client.dart';
+import 'package:spotify/core/api_const.dart';
+import 'package:spotify/core/api_method_enum.dart';
+
+import '../../../../core/db_client.dart';
+
+final homeDataSourceProvider = Provider(
+  (ref) => HomeDataSourceImpl(
+    apiClient: ref.watch(apiClientProvider),
+    dbClient: ref.watch(dbClientProvider),
+  ),
+);
+
+abstract class HomeDataSource {
+  Future<void> uploadSongDs(
+    File selectedAudio,
+    File selectedImage,
+    String songName,
+    String artist,
+    String hexCode,
+  );
+}
+
+class HomeDataSourceImpl implements HomeDataSource {
+  final ApiClient apiClient;
+  final DbClient dbClient;
+  HomeDataSourceImpl({required this.apiClient, required this.dbClient});
+  @override
+  Future<String> uploadSongDs(
+    File selectedAudio,
+    File selectedImage,
+    String songName,
+    String artist,
+    String hexCode,
+  ) async {
+    final token = await dbClient.getData(
+      dataType: LocalDataType.string,
+      dbKey: "token",
+    );
+
+    FormData formData = FormData.fromMap({
+      'artist': artist,
+      'song_name': songName,
+      'hex_code': hexCode,
+      'song': await MultipartFile.fromFile(selectedAudio.path),
+      'thumbnail': await MultipartFile.fromFile(selectedImage.path),
+    });
+
+    final result = await apiClient.request(
+      path: ApiConst.uploadSong,
+      type: ApiMethod.post,
+      token: token,
+      data: formData,
+    );
+    return result.toString();
+  }
+}

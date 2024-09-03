@@ -11,14 +11,17 @@ import 'package:spotify/core/exception_handle.dart';
 final apiClientProvider = Provider((ref) => ApiClient());
 
 class ApiClient {
-  Future request({
-    required String path,
-    ApiMethod type = ApiMethod.get,
-    dynamic data = const {},
-  }) async {
+  Future request(
+      {required String path,
+      ApiMethod type = ApiMethod.get,
+      dynamic data = const {},
+      String token = ""}) async {
     final Dio dio = Dio(
       BaseOptions(
         baseUrl: ApiConst.baseUrl,
+        headers: {
+          "x-auth-token": token,
+        },
       ),
     );
     if (kDebugMode) {
