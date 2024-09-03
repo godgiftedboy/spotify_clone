@@ -54,12 +54,12 @@ class _UploadSongPageState extends ConsumerState<UploadSongPage> {
         actions: [
           IconButton(
               onPressed: () async {
-                setState(() {
-                  isLoading = true;
-                });
                 if (formKey.currentState!.validate() &&
                     selectedAudio != null &&
                     selectedImage != null) {
+                  setState(() {
+                    isLoading = true;
+                  });
                   await ref.watch(homeControllerProvider.notifier).uploadSong(
                         selectedAudio: selectedAudio!,
                         selectedImage: selectedImage!,
