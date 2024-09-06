@@ -124,6 +124,15 @@ class MusicPlayer extends ConsumerWidget {
                               position.inMilliseconds / duration.inMilliseconds;
                         }
 
+                        final durationMinutes =
+                            duration!.inMinutes.remainder(60);
+                        final durationSeconds =
+                            duration.inSeconds.remainder(60);
+                        final positionMinutes =
+                            position!.inMinutes.remainder(60);
+                        final positionSeconds =
+                            position.inSeconds.remainder(60);
+
                         return Column(
                           children: [
                             SliderTheme(
@@ -148,7 +157,7 @@ class MusicPlayer extends ConsumerWidget {
                             Row(
                               children: [
                                 Text(
-                                  '${position?.inMinutes}:${(position?.inSeconds ?? 0) < 10 ? '0${position?.inSeconds}' : position?.inSeconds}',
+                                  '$positionMinutes:${(positionSeconds) < 10 ? '0$positionSeconds' : positionSeconds}',
                                   style: const TextStyle(
                                     color: Pallete.subtitleText,
                                     fontSize: 13,
@@ -157,7 +166,7 @@ class MusicPlayer extends ConsumerWidget {
                                 ),
                                 const Expanded(child: SizedBox()),
                                 Text(
-                                  '${duration?.inMinutes}:${(duration?.inSeconds ?? 0) < 10 ? '0${duration?.inSeconds}' : duration?.inSeconds}',
+                                  '$durationMinutes:${(durationSeconds) < 10 ? '0$durationSeconds' : durationSeconds}',
                                   style: const TextStyle(
                                     color: Pallete.subtitleText,
                                     fontSize: 13,
