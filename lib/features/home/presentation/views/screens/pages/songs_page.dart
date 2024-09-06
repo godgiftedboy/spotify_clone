@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify/core/pallete.dart';
 import 'package:spotify/core/providers/current_song_provider.dart';
+import 'package:spotify/core/utils.dart';
 import 'package:spotify/features/home/presentation/logic/home_controller.dart';
 import 'package:spotify/features/home/presentation/views/screens/upload_song_page.dart';
 
@@ -14,7 +15,23 @@ class SongsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final recentlyPlayedSongs =
         ref.watch(homeControllerProvider.notifier).getRecentlyPlayedSongs();
-    return SafeArea(
+    final currentSong = ref.watch(currentSongProvider);
+    return AnimatedContainer(
+      //for smooth transition of gradient while changing the song
+      duration: const Duration(milliseconds: 500),
+      decoration: currentSong == null
+          ? null
+          : BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  hexToColor(currentSong.hex_code),
+                  Pallete.transparentColor,
+                ],
+                stops: const [0.0, 0.3],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
