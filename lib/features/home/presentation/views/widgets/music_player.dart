@@ -108,7 +108,7 @@ class MusicPlayer extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 15),
+                  const Expanded(child: SizedBox(height: 15)),
                   StreamBuilder(
                       stream: songNotifier.audioPlayer!.positionStream,
                       builder: (context, snapshot) {
@@ -178,7 +178,7 @@ class MusicPlayer extends ConsumerWidget {
                           ],
                         );
                       }),
-                  const SizedBox(height: 15),
+                  const Expanded(child: SizedBox(height: 15)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -222,7 +222,7 @@ class MusicPlayer extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
+                  const Expanded(child: SizedBox(height: 25)),
                   Row(
                     children: [
                       Padding(
