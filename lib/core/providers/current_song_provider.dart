@@ -1,13 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:spotify/features/home/data/models/song_model.dart';
+import 'package:spotify/features/home/data/repository/home_local_repository.dart';
 
 class CurrentSongProvider extends Notifier<SongModel?> {
   AudioPlayer? audioPlayer;
   bool isPlaying = false;
+  late HomeLocalRepository _homeLocalRepository;
 
   @override
   SongModel? build() {
+    _homeLocalRepository = ref.watch(homeLocalRepositoryProvider);
     return null;
   }
 
@@ -28,6 +31,8 @@ class CurrentSongProvider extends Notifier<SongModel?> {
         this.state = this.state?.copyWith(hex_code: this.state?.hex_code);
       }
     });
+
+    _homeLocalRepository.uploadLocalSong(song);
 
     audioPlayer!.play();
     isPlaying = true;

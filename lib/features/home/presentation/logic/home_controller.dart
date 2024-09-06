@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify/core/utils.dart';
 import 'package:spotify/features/home/data/models/song_model.dart';
+import 'package:spotify/features/home/data/repository/home_local_repository.dart';
 import 'package:spotify/features/home/data/repository/home_repository.dart';
 
 final homeControllerProvider =
@@ -12,10 +13,12 @@ final homeControllerProvider =
 
 class HomeController extends AsyncNotifier<List<SongModel>> {
   late HomeRepository homeRepository;
+  late HomeLocalRepository _homeLocalRepository;
 
   @override
   FutureOr<List<SongModel>> build() {
     homeRepository = ref.watch(homeRepositoryProvider);
+    _homeLocalRepository = ref.watch(homeLocalRepositoryProvider);
     return getAllSongs();
   }
 
@@ -45,5 +48,9 @@ class HomeController extends AsyncNotifier<List<SongModel>> {
       (l) => throw l.message,
       (r) => r,
     );
+  }
+
+  List<SongModel> getRecentlyPlayedSongs() {
+    return _homeLocalRepository.loadSongs();
   }
 }

@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:spotify/core/theme.dart';
 import 'package:spotify/features/auth/presentation/logic/auth_controller.dart';
 import 'package:spotify/features/auth/presentation/views/screens/login_page.dart';
@@ -13,6 +15,8 @@ void main() async {
   final container = ProviderContainer();
   await container.read(authControllerProvider.notifier).initSharedPreferences();
   await container.read(authControllerProvider.notifier).checkLogin();
+  final dir = await getApplicationDocumentsDirectory();
+  Hive.defaultDirectory = dir.path;
 
   runApp(
     UncontrolledProviderScope(
