@@ -15,6 +15,8 @@ class CurrentSongProvider extends Notifier<SongModel?> {
   }
 
   void addSong(SongModel song) async {
+    await audioPlayer
+        ?.stop(); //? (question mark) indicates to call stop method only if there is already a instance of audioPlayer.
     audioPlayer = AudioPlayer();
 
     final audioSource = AudioSource.uri(
