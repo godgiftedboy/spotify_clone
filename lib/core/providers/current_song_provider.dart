@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:spotify/features/home/data/models/song_model.dart';
 import 'package:spotify/features/home/data/repository/home_local_repository.dart';
 
@@ -21,6 +22,12 @@ class CurrentSongProvider extends Notifier<SongModel?> {
 
     final audioSource = AudioSource.uri(
       Uri.parse(song.song_url),
+      tag: MediaItem(
+        id: song.id,
+        title: song.song_name,
+        artist: song.artist,
+        artUri: Uri.parse(song.thumbnail_url),
+      ),
     );
     await audioPlayer!.setAudioSource(audioSource);
 
