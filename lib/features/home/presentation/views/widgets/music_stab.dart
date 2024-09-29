@@ -1,8 +1,10 @@
 import 'package:spotify/core/providers/current_song_provider.dart';
+import 'package:spotify/core/providers/current_user_provider.dart';
 import 'package:spotify/core/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify/features/home/presentation/logic/fav_song_controller.dart';
 
 import '../../../../../core/pallete.dart';
 import 'music_player.dart';
@@ -14,6 +16,8 @@ class MusicSlab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSong = ref.watch(currentSongProvider);
     final songNotifier = ref.read(currentSongProvider.notifier);
+    final userFavorites =
+        ref.watch(currentUserProvider.select((data) => data!.favorites));
 
     if (currentSong == null) {
       return const SizedBox();
@@ -103,9 +107,18 @@ class MusicSlab extends ConsumerWidget {
                 Row(
                   children: [
                     IconButton(
-                      onPressed: () async {},
-                      icon: const Icon(
-                        CupertinoIcons.heart,
+                      onPressed: () async {
+                        await ref
+                            .read(favSongControllerProvider.notifier)
+                            .favSong(currentSong);
+                      },
+                      icon: Icon(
+                        userFavorites
+                                .where((fav) => fav.song_id == currentSong.id)
+                                .toList()
+                                .isNotEmpty
+                            ? CupertinoIcons.heart_fill
+                            : CupertinoIcons.heart,
                         color: Pallete.whiteColor,
                       ),
                     ),

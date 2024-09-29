@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify/features/home/presentation/views/screens/pages/user_profile_page.dart';
 import 'package:spotify/features/home/presentation/views/widgets/music_stab.dart';
 
 import '../../../../../core/pallete.dart';
@@ -19,6 +20,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   final pages = const [
     SongsPage(),
     LibraryPage(),
+    UserProfilePage(),
   ];
 
   @override
@@ -59,45 +61,17 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             label: "Library",
           ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.person,
+              color: selectedIndex == 1
+                  ? Pallete.whiteColor
+                  : Pallete.inactiveBottomBarItemColor,
+            ),
+            label: "Profile",
+          ),
         ],
       ),
     );
   }
 }
-
-// Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Text("Name: ${ref.watch(currentUserProvider)!.name}"),
-//           Text("Email: ${ref.watch(currentUserProvider)!.email}"),
-//           CircleAvatar(
-//             radius: 50,
-//             child: ClipOval(
-//               child: Image.network(
-//                 scale: 0.7,
-//                 ref.watch(currentUserProvider)!.photoUrl,
-//                 fit: BoxFit.contain,
-//                 errorBuilder: (BuildContext context, Object exception,
-//                     StackTrace? stackTrace) {
-//                   return Image.asset('assets/images/image_not_found.png');
-//                 },
-//               ),
-//             ),
-//           ),
-//           AuthGradientButton(
-//             buttonText: "Upload Song",
-//             onTap: () {
-//               Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                       builder: (context) => const UploadSongPage()));
-//             },
-//           ),
-//           AuthGradientButton(
-//             buttonText: "Logout",
-//             onTap: () {
-//               ref.watch(authControllerProvider.notifier).logout(context);
-//             },
-//           ),
-//         ],
-// ),

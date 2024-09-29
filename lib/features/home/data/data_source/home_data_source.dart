@@ -26,6 +26,8 @@ abstract class HomeDataSource {
   );
 
   Future<List<SongModel>> getAllSongsDs();
+  Future<bool> favSongDs(SongModel song);
+  Future<List<SongModel>> getAllFavSongsDs();
 }
 
 class HomeDataSourceImpl implements HomeDataSource {
@@ -73,5 +75,36 @@ class HomeDataSourceImpl implements HomeDataSource {
       token: token,
     );
     return List.from(result).map((song) => SongModel.fromMap(song)).toList();
+  }
+
+  @override
+  Future<bool> favSongDs(SongModel song) async {
+    final token = await dbClient.getData(
+      dataType: LocalDataType.string,
+      dbKey: "token",
+    );
+    final result = await apiClient.request(
+        path: ApiConst.favSong,
+        token: token,
+        type: ApiMethod.post,
+        data: {
+          'song_id': song.id,
+        });
+    return result['message'];
+  }
+
+  @override
+  Future<List<SongModel>> getAllFavSongsDs() async {
+    final token = await dbClient.getData(
+      dataType: LocalDataType.string,
+      dbKey: "token",
+    );
+    final result = await apiClient.request(
+      path: ApiConst.favSongList,
+      token: token,
+    );
+    return List.from(result)
+        .map((element) => SongModel.fromMap(element['song']))
+        .toList();
   }
 }

@@ -10,7 +10,7 @@ import 'package:spotify/core/utils.dart';
 import 'package:spotify/features/auth/data/models/login/login_request_model.dart';
 import 'package:spotify/features/auth/data/models/login/login_response_model.dart';
 import 'package:spotify/features/auth/data/models/signup/signup_request_model.dart';
-import 'package:spotify/features/auth/data/models/user_model.dart';
+import 'package:spotify/core/models/user_model.dart';
 import 'package:spotify/features/auth/data/repository/auth_repository.dart';
 import 'package:spotify/features/auth/presentation/logic/auth_state.dart';
 import 'package:spotify/features/auth/presentation/views/screens/login_page.dart';
@@ -41,13 +41,24 @@ class AuthController extends Notifier<AuthState> {
       state = const AuthState.loggedOut();
     } else {
       state = const AuthState.loggedIn();
-      getUserData();
+      await getUserData();
     }
   }
 
   getUserData() async {
-    final response = await ref.read(dbClientProvider).getAuthData();
-    ref.read(currentUserProvider.notifier).addUser(response);
+    final user =
+        await ref.read(authControllerProvider.notifier).getCurrentUser();
+    ref.read(currentUserProvider.notifier).addUser(user);
+  }
+
+  Future<UserModel> getCurrentUser() async {
+    final token =
+        await dbClient.getData(dataType: LocalDataType.string, dbKey: "token");
+    final result = await authRepository.getCurrentUser(token);
+    return result.fold(
+      (l) => throw l.message,
+      (r) => r,
+    );
   }
 
   Future<LoginResponseModel> login(

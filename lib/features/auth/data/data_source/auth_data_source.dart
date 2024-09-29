@@ -4,7 +4,7 @@ import 'package:spotify/core/api_const.dart';
 import 'package:spotify/core/api_method_enum.dart';
 import 'package:spotify/features/auth/data/models/login/login_request_model.dart';
 import 'package:spotify/features/auth/data/models/signup/signup_request_model.dart';
-import 'package:spotify/features/auth/data/models/user_model.dart';
+import 'package:spotify/core/models/user_model.dart';
 
 final authDataSourceProvider = Provider<AuthDataSource>((ref) {
   return AuthDataSourceImpl(
@@ -15,6 +15,7 @@ final authDataSourceProvider = Provider<AuthDataSource>((ref) {
 abstract class AuthDataSource {
   Future<UserModel> loginDs(LoginRequestModel loginRequestData);
   Future<UserModel> signupDs(SignUpRequestModel signupRequestData);
+  Future<UserModel> getCurrentUserDs(String token);
 }
 
 class AuthDataSourceImpl implements AuthDataSource {
@@ -55,5 +56,15 @@ class AuthDataSourceImpl implements AuthDataSource {
     // "password": "$2b$12$pfpLC63lGxZwgmh7Isn5aOaDyQr.I74NcxDHIrwtCrMgVwGL.PdjG",
     // "id": "56f8356d-f24f-48c4-b410-66d425a775e3"
     // }
+  }
+
+  @override
+  Future<UserModel> getCurrentUserDs(String token) async {
+    final result = await apiClient.request(
+      path: ApiConst.getuser,
+      type: ApiMethod.get,
+      token: token,
+    );
+    return UserModel.fromJson(result ?? {}).copyWith(token: token);
   }
 }

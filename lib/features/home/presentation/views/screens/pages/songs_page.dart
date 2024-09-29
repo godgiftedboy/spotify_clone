@@ -4,9 +4,6 @@ import 'package:spotify/core/pallete.dart';
 import 'package:spotify/core/providers/current_song_provider.dart';
 import 'package:spotify/core/utils.dart';
 import 'package:spotify/features/home/presentation/logic/home_controller.dart';
-import 'package:spotify/features/home/presentation/views/screens/upload_song_page.dart';
-
-import '../../../../../auth/presentation/views/widgets/gradient_button.dart';
 
 class SongsPage extends ConsumerWidget {
   const SongsPage({super.key});
@@ -177,15 +174,6 @@ class SongsPage extends ConsumerWidget {
               child: CircularProgressIndicator(),
             );
           }),
-          AuthGradientButton(
-            buttonText: "Upload Song",
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const UploadSongPage()));
-            },
-          ),
         ],
       ),
     );

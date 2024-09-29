@@ -23,6 +23,8 @@ abstract class HomeRepository {
     String hexCode,
   );
   Future<Either<AppError, List<SongModel>>> getAllsSongs();
+  Future<Either<AppError, bool>> favSong(SongModel song);
+  Future<Either<AppError, List<SongModel>>> getAllFavSongs();
 }
 
 class HomeRepositoryImpl implements HomeRepository {
@@ -55,6 +57,26 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<Either<AppError, List<SongModel>>> getAllsSongs() async {
     try {
       final result = await homeDataSourceImpl.getAllSongsDs();
+      return Right(result);
+    } on DioExceptionHandle catch (e) {
+      return Left(AppError(e.message!));
+    }
+  }
+
+  @override
+  Future<Either<AppError, bool>> favSong(SongModel song) async {
+    try {
+      final result = await homeDataSourceImpl.favSongDs(song);
+      return Right(result);
+    } on DioExceptionHandle catch (e) {
+      return Left(AppError(e.message!));
+    }
+  }
+
+  @override
+  Future<Either<AppError, List<SongModel>>> getAllFavSongs() async {
+    try {
+      final result = await homeDataSourceImpl.getAllFavSongsDs();
       return Right(result);
     } on DioExceptionHandle catch (e) {
       return Left(AppError(e.message!));

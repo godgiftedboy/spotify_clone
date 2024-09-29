@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify/features/home/presentation/logic/fav_song_controller.dart';
 
 import '../../../../../core/pallete.dart';
 import '../../../../../core/providers/current_song_provider.dart';
@@ -100,7 +101,11 @@ class MusicPlayer extends ConsumerWidget {
                       ),
                       const Expanded(child: SizedBox()),
                       IconButton(
-                        onPressed: () async {},
+                        onPressed: () async {
+                          await ref
+                              .read(favSongControllerProvider.notifier)
+                              .favSong(currentSong);
+                        },
                         icon: const Icon(
                           CupertinoIcons.heart,
                           color: Pallete.whiteColor,
